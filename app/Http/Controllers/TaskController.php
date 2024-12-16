@@ -1,5 +1,4 @@
 <?php
-// app/Http/Controllers/TaskController.php
 
 namespace App\Http\Controllers;
 
@@ -40,39 +39,40 @@ class TaskController extends Controller
 
         return redirect()->route('tasks.index');
     }
+    // Hiển thị dữ liệu của task
+    public function show(Task $task)
+    {
+        return view('tasks.show', compact('task'));
+    }
+
 
     // Hiển thị form để chỉnh sửa một task
-    public function edit($id)
+    public function edit(Task $task)
     {
-        $task = Task::findOrFail($id);
         return view('tasks.edit', compact('task'));
     }
 
     // Cập nhật task vào cơ sở dữ liệu
-    public function update(Request $request, $id)
+    public function update(Request $request, Task $task)
     {
-        $task = Task::findOrFail($id);
-
-        // Kiểm tra nếu trường 'completed' có trong request, và chuyển nó thành true (1) hoặc false (0)
         $completed = $request->has('completed') ? 1 : 0;
 
-        // Cập nhật task
         $task->update([
+            'title' => $request->input('title'),
+            'description' => $request->input('description'),
             'long_description' => $request->input('long_description'),
             'completed' => $completed,
         ]);
 
-        return redirect()->route('tasks.index');
+        return redirect()->route('tasks.index')->with('success', 'Task updated successfully.');
     }
 
     // Xóa task khỏi cơ sở dữ liệu
-    public function destroy($id)
+    public function destroy(Task $task)
     {
-        $task = Task::findOrFail($id);
         $task->delete();
 
-        return redirect()->route('tasks.index');
+        return redirect()->route('tasks.index')->with('success', 'Task deleted successfully.');
     }
-}
 
-?>
+}
